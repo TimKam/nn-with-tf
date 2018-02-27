@@ -1,0 +1,9 @@
+examples/
+Datasets/
+**/.idea/
+**/.ipynb_checkpoints/
+venv/
+**/.DS_Store
+analyses/Analyses.pdf
+**/local.properties
+**/build
