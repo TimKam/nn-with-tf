@@ -12,7 +12,7 @@ from examples import cifar10_read
 def run_network(path, batch_size, iterations, learning_rate):
     # read in the dataset
     print('reading in the CIFAR10 dataset')
-    dataset = cifar10_read.read_data_sets(path, one_hot=True, reshape=True)
+    dataset = cifar10_read.read_data_sets(path, one_hot=True, reshape=False)
 
     using_tensorboard = True
 
@@ -26,8 +26,35 @@ def run_network(path, batch_size, iterations, learning_rate):
     # If x_input has shape [N, input_dim] then y_ will have shape [N, 10]
 
     input_dim = 32 * 32 * 3  # d
-    x_input = tf.placeholder(tf.float32, shape=[None, input_dim])
+    x_input = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])
     y_ = tf.placeholder(tf.float32, shape=[None, 10])
+    F = tf.Variable(tf.truncated_normal([5, 5, 3, 64]), stddev=0.1)
+    b = tf.Variable(tf.constant(.1, shape=[64]))
+    S = tf.nn.conv2d(x_input, F, strides=[1, 1, 1, 1], padding='SAME') + b
+    X1 = tf.nn.relu(S)
+    H = tf.nn.max_pool(X1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME')
+    vec_H = tf.reshape(H, [-1, int(16*16*64)])
+    b1 = tf.Variable(tf.constant(.1, shape=[64]))
+    s1 = tf.matmul(W1, vec_H) + b1
+    """W1 = tf.Variable(tf.truncated_normal([m, int(16 * 16 * nF)], stddev=.01))
+    W2 = tf.Variable(tf.truncated_normal([10, m], stddev=.01))
+    H_flat = tf.reshape(H, [-1, int(16 * 16 * nF)])
+    b1 = tf.Variable(tf.constant(.1, shape=[m, int(16 * 16 * nF)]))
+    print('##################')
+    print('W1: ' + str(W1.shape))
+    print('H: ' + str(H.shape))
+    print('H_flat: ' + str(H_flat.shape))
+    print('H_flat transposed: ' + str(tf.transpose(H_flat).shape))
+    s1 = tf.matmul(W1, H_flat) + b1
+    print('s1: ' + str(s1.shape))
+    x1 = tf.nn.relu(s1)
+    b2 = tf.Variable(tf.constant(.1, shape=[10, int(16 * 16 * nF)]))
+    s = tf.matmul(W2, x1) + b2
+    print('s: ' + str(s.shape))
+    y = tf.nn.softmax(s)
+    print('y: ' + str(y.shape))
+    print('##################')"""
+
 
     # 1.2) define the parameters of the network
     # W: 3072 x 10 weight matrix,  b: bias vector of length 10
@@ -36,25 +63,16 @@ def run_network(path, batch_size, iterations, learning_rate):
     b = tf.Variable(tf.constant(0.1, shape=[10]))
 
     # 1.3) define the sequence of operations in the network to produce the output
-    # y0 = W *  x_input + b
-    # y0 will have size [N, 10]  if x_input has size [N, input_dim]
-    y0 = tf.matmul(x_input, W) + b
-
-    # 1.3.a) add a hidden layer
-    # hidden layer
-    x1 = tf.nn.relu(y0)
-    W2 = tf.Variable(tf.truncated_normal([10, 10], stddev=.01))
-    b2 = tf.Variable(tf.constant(0.1, shape=[10]))
-    # softmax
-    y = tf.nn.softmax(tf.matmul(x1, W2) + b2)
-
+    # y = W *  x_input + b
+    # y will have size [N, 10]  if x_input has size [N, input_dim]
+    y = tf.matmul(x_input, W) + b
 
     # 1.4) define the loss funtion
     # cross entropy loss:
     # Apply softmax to each output vector in y to give probabilities for each class then compare to the ground truth labels via the cross-entropy loss and then compute the average loss over all the input examples
     cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
 
-    train_step = tf.train.MomentumOptimizer(learning_rate, tf.Variable(0.9, trainable=False)).minimize(cross_entropy)
+    train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
 
     # (optional) definiton of performance measures
     # definition of accuracy, count the number of correct predictions where the predictions are made by choosing the class with highest score
@@ -97,7 +115,7 @@ def run_network(path, batch_size, iterations, learning_rate):
             # set up a file writer and directory to where it should write info +
             # attach the assembled graph
             summary_writer = tf.summary.FileWriter(
-                '/Users/timotheuskampik/Desktop/github/sensing_perception/graphs/network2/results/test', sess.graph)
+                '/Users/timotheuskampik/Desktop/github/sensing_perception/graphs/network1/results/good2', sess.graph)
         ##################################################
 
         # 2.2)  Initialize the network's parameter variables
@@ -164,12 +182,12 @@ def run_network(path, batch_size, iterations, learning_rate):
 # CHANGE THIS PATH TO THE LOCATION OF THE CIFAR-10 dataset on your local machine
 data_dir = '../Datasets/cifar-10-batches-py/'
 
-# run_network(data_dir, 200, 1000, 0.01)
+run_network(data_dir, 200, 1000, 0.01)
 # run_network(data_dir, 200, 1000, 0.0001)
 # run_network(data_dir, 200, 1000, 0.1)
 
 # run_network(data_dir, 10, 1000, 0.01)
 # run_network(data_dir, 20000, 1000, 0.01)"""
 
-run_network(data_dir, 300, 50000, 0.05)
+# run_network(data_dir, 300, 50000, 0.05)
 

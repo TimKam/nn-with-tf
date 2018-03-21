@@ -156,9 +156,11 @@ def run_network(path, batch_size, iterations, learning_rate):
 data_dir = '../Datasets/cifar-10-batches-py/'
 
 run_network(data_dir, 200, 1000, 0.01)
-run_network(data_dir, 200, 1000, 0.0001)
-run_network(data_dir, 200, 1000, 0.1)
+# run_network(data_dir, 200, 1000, 0.0001)
+# run_network(data_dir, 200, 1000, 0.1)
 
-run_network(data_dir, 10, 1000, 0.01)
-run_network(data_dir, 20000, 1000, 0.01)
+# run_network(data_dir, 10, 1000, 0.01)
+# run_network(data_dir, 20000, 1000, 0.01)"""
+
+# run_network(data_dir, 300, 50000, 0.05)
 
