@@ -7,3 +7,5 @@ venv/
 analyses/Analyses.pdf
 **/local.properties
 **/build
+nn_with_tf.egg-info
+**/__pycache__/

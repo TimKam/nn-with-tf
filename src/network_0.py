@@ -9,15 +9,17 @@ import tensorflow as tf
 from src.cifar10_read import read_data_sets
 
 
-def run_network_1(path, graph_path, batch_size, iterations, learning_rate):
+def run_network_0(path, graph_path, batch_size, iterations, learning_rate):
     """
 
     :param path:
+    :param graph_path:
     :param batch_size:
     :param iterations:
     :param learning_rate:
     :return:
     """
+
     # read in the dataset
     print('reading in the CIFAR10 dataset')
     dataset = read_data_sets(path, one_hot=True, reshape=True)
@@ -44,25 +46,16 @@ def run_network_1(path, graph_path, batch_size, iterations, learning_rate):
     b = tf.Variable(tf.constant(0.1, shape=[10]))
 
     # 1.3) define the sequence of operations in the network to produce the output
-    # y0 = W *  x_input + b
-    # y0 will have size [N, 10]  if x_input has size [N, input_dim]
-    y0 = tf.matmul(x_input, W) + b
-
-    # 1.3.a) add a hidden layer
-    # hidden layer
-    x1 = tf.nn.relu(y0)
-    W2 = tf.Variable(tf.truncated_normal([10, 10], stddev=.01))
-    b2 = tf.Variable(tf.constant(0.1, shape=[10]))
-    # softmax
-    y = tf.nn.softmax(tf.matmul(x1, W2) + b2)
-
+    # y = W *  x_input + b
+    # y will have size [N, 10]  if x_input has size [N, input_dim]
+    y = tf.matmul(x_input, W) + b
 
     # 1.4) define the loss funtion
     # cross entropy loss:
     # Apply softmax to each output vector in y to give probabilities for each class then compare to the ground truth labels via the cross-entropy loss and then compute the average loss over all the input examples
     cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
 
-    train_step = tf.train.MomentumOptimizer(learning_rate, tf.Variable(0.9, trainable=False)).minimize(cross_entropy)
+    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
 
     # (optional) definiton of performance measures
     # definition of accuracy, count the number of correct predictions where the predictions are made by choosing the class with highest score
@@ -172,12 +165,15 @@ def run_network_1(path, graph_path, batch_size, iterations, learning_rate):
 # CHANGE THIS PATH TO THE LOCATION OF THE CIFAR-10 dataset on your local machine
 # data_dir = '../Datasets/cifar-10-batches-py/'
 
-# run_network(data_dir, 200, 1000, 0.01)
+# run_network_0(data_dir, 200, 1000, 0.01)
+
+
+
 # run_network(data_dir, 200, 1000, 0.0001)
 # run_network(data_dir, 200, 1000, 0.1)
 
 # run_network(data_dir, 10, 1000, 0.01)
 # run_network(data_dir, 20000, 1000, 0.01)"""
 
-# run_network_1(data_dir, 300, 50000, 0.05)
+# run_network(data_dir, 300, 50000, 0.05)
 

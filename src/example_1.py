@@ -1,16 +1,28 @@
 import tensorflow as tensorflow
 
-x = tensorflow.constant(2, name='x')
-y = tensorflow.constant(3, name='y')
 
-operation_1 = tensorflow.add(x, y)
-operation_2 = tensorflow.multiply(x, y)
-operation_3 = tensorflow.pow(operation_1, operation_2)
+def run_example_1(x, y):
+    """
 
-with tensorflow.Session() as session:
-    writer = tensorflow.summary.FileWriter('../graphs', session.graph)
-    print(session.run(operation_3))
-writer.close()
+    :param x:
+    :param y:
+    :return:
+    """
+    x = tensorflow.constant(x, name='x')
+    y = tensorflow.constant(y, name='y')
+
+    operation_1 = tensorflow.add(x, y)
+    operation_2 = tensorflow.multiply(x, y)
+    operation_3 = tensorflow.pow(operation_1, operation_2)
+
+    with tensorflow.Session() as session:
+        writer = tensorflow.summary.FileWriter('../graphs', session.graph)
+        print(session.run(operation_3))
+    writer.close()
+
+
+
+run_example_1(2, 3)
 # returns: (2 + 3) to the power of (2 * 3) = 5 to the power of 6 = 15625
 """
 Exercise 1:

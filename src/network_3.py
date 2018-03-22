@@ -6,13 +6,21 @@ https://kth.instructure.com/courses/4962/files/806181/download?verifier=9keHpBCs
 
 import tensorflow as tf
 # class written to replicate input_data from tensorflow.examples.tutorials.mnist for CIFAR-10
-from examples import cifar10_read
+from cifar10_read import read_data_sets
 
 
-def run_network(path, batch_size, iterations, learning_rate):
+def run_network_2(path, batch_size, iterations, learning_rate):
+    """
+
+    :param path:
+    :param batch_size:
+    :param iterations:
+    :param learning_rate:
+    :return:
+    """
     # read in the dataset
     print('reading in the CIFAR10 dataset')
-    dataset = cifar10_read.read_data_sets(path, one_hot=True, reshape=False)
+    dataset = read_data_sets(path, one_hot=True, reshape=False)
 
     using_tensorboard = True
 
@@ -32,7 +40,6 @@ def run_network(path, batch_size, iterations, learning_rate):
     b = tf.Variable(tf.constant(.1, shape=[nF]))
     S = tf.nn.conv2d(x_input, F, strides=[1, 1, 1, 1], padding='SAME') + b
     X1 = tf.nn.relu(S)
-    print('X1: ' + str(X1.shape))
     H = tf.nn.max_pool(X1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME')
     y1 = tf.layers.dense(inputs=tf.reshape(H, [-1, int(16 * 16 * nF)]), units=10, activation=tf.nn.relu)
     y = tf.layers.dense(inputs=y1, units=10, activation=tf.nn.relu)
@@ -57,14 +64,14 @@ def run_network(path, batch_size, iterations, learning_rate):
     # If using TENSORBOARD
     if using_tensorboard:
         # keep track of the loss and accuracy for the training set
-        tf.summary.scalar('training loss', cross_entropy, collections=['training'])
-        tf.summary.scalar('training accuracy', accuracy, collections=['training'])
+        tf.summary.scalar('training_loss', cross_entropy, collections=['training'])
+        tf.summary.scalar('training_accuracy', accuracy, collections=['training'])
         # merge the two quantities
         tsummary = tf.summary.merge_all('training')
 
         # keep track of the loss and accuracy for the validation set
-        tf.summary.scalar('validation loss', cross_entropy, collections=['validation'])
-        tf.summary.scalar('validation accuracy', accuracy, collections=['validation'])
+        tf.summary.scalar('validation_loss', cross_entropy, collections=['validation'])
+        tf.summary.scalar('validation_accuracy', accuracy, collections=['validation'])
         # merge the two quantities
         vsummary = tf.summary.merge_all('validation')
 
@@ -146,17 +153,4 @@ def run_network(path, batch_size, iterations, learning_rate):
 
     ##################################################
 
-
-# location of the CIFAR-10 dataset
-# CHANGE THIS PATH TO THE LOCATION OF THE CIFAR-10 dataset on your local machine
-data_dir = '../Datasets/cifar-10-batches-py/'
-
-run_network(data_dir, 200, 10000, 0.01)
-# run_network(data_dir, 200, 1000, 0.0001)
-# run_network(data_dir, 200, 1000, 0.1)
-
-# run_network(data_dir, 10, 1000, 0.01)
-# run_network(data_dir, 20000, 1000, 0.01)"""
-
-# run_network(data_dir, 300, 50000, 0.05)
 
